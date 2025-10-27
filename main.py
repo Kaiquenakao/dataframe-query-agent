@@ -1,6 +1,8 @@
 import streamlit as st
 
 
+arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "xlsx", "txt", "pdf"])
+
 with st.sidebar:
     st.header("Menu")
     openai_token = st.text_input("OpenAI API Token", type="password")
