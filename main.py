@@ -4,8 +4,11 @@ import pandas as pd
 
 arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json"])
 
-df = pd.DataFrame(arquivo)
-print(df)
+
+if arquivo is not None:
+    df = pd.read_csv(arquivo)
+    st.write(df)
+
 
 with st.sidebar:
     st.header("Menu")
