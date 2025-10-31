@@ -6,7 +6,9 @@ st.title("Visualizador de DataFrame")
 arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json"])
 
 if arquivo is not None:
-    if st.button("Carregar DataFrame"):
+    prompt = st.text_input("Digite o que deseja realizar com o dataframe")
+
+    if st.button("Carregar DataFrame Original"):
         if arquivo.name.endswith(".csv"):
             df = pd.read_csv(arquivo)
         elif arquivo.name.endswith(".parquet"):
@@ -20,6 +22,9 @@ if arquivo is not None:
         if df is not None:
             st.success("DataFrame carregado com sucesso!")
             st.write(df)
+
+            
+
 
 with st.sidebar:
     st.header("Menu")
