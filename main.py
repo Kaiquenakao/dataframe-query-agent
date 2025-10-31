@@ -21,6 +21,8 @@ if arquivo is not None:
             st.success("DataFrame carregado com sucesso!")
             st.write(df)
 
+prompt = st.text_input("Digite o que deseja realizar com o dataframe")
+
 with st.sidebar:
     st.header("Menu")
     openai_token = st.text_input("OpenAI API Token", type="password")
