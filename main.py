@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+from src.agent_chat import ChatConversation
+
+cc = ChatConversation()
 
 st.title("Visualizador de DataFrame")
 
@@ -7,6 +10,8 @@ arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json
 
 if arquivo is not None:
     prompt = st.text_input("Digite o que deseja realizar com o dataframe")
+    resp = cc.ask(prompt=prompt, df=pd.read_csv(arquivo))
+    print(resp)
 
     if st.button("Carregar DataFrame Original"):
         if arquivo.name.endswith(".csv"):
