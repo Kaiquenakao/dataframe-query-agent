@@ -1,9 +1,15 @@
 from openai import OpenAI
 import pandas as pd
 import json
+from dotenv import load_dotenv, find_dotenv
+import os
+
+load_dotenv(find_dotenv(), override=True)
+
+api_key = os.getenv("OPENAI_API_KEY")
 
 class ChatConversation:
-    def __init__(self, api_key: str, temperature: float = 0.7, model: str = "gpt-4o-mini"):
+    def __init__(self, temperature: float = 0.1, model: str = "gpt-4o-mini"):
         """
         Inicializa a classe de conversação com o modelo da OpenAI.
         """
@@ -17,7 +23,7 @@ class ChatConversation:
         Envia um prompt para o modelo, opcionalmente com o DataFrame.
         """
         if df is not None:
-            sample = df.head(5).to_dict(orient="records")
+            sample = df.head().to_dict(orient="records")
             data_str = json.dumps(sample, ensure_ascii=False)
             system_prompt = (
                 "Você é um assistente especializado em análise de dados. "
@@ -25,8 +31,9 @@ class ChatConversation:
                 f"{data_str}\n"
                 "Use isso como contexto para responder."
             )
+            print(system_prompt)
         else:
-            system_prompt = "Você é um assistente que responde perguntas gerais sobre dados."
+            system_prompt = "Você é um assistente que responde com códigos em python."
 
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(self.history)
