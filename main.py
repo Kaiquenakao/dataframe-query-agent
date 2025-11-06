@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from src.agent_chat import ChatConversation
+import re
 
 cc = ChatConversation()
 
@@ -11,7 +12,16 @@ arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json
 if arquivo is not None:
     prompt = st.text_input("Digite o que deseja realizar com o dataframe")
     resp = cc.ask(prompt=prompt, df=pd.read_csv(arquivo))
-    print(resp)
+    match = re.search(r"```python(.*?)```", resp, re.DOTALL)
+
+    if match:
+        codigo = match.group(1).strip()
+        print("=== Código extraído ===")
+        exec(codigo)
+    else:
+        print("Nenhum código Python encontrado.")
+        print(match)
+
 
     if st.button("Carregar DataFrame Original"):
         if arquivo.name.endswith(".csv"):
