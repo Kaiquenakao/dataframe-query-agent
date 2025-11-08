@@ -26,14 +26,13 @@ class ChatConversation:
             sample = df.head().to_dict(orient="records")
             data_str = json.dumps(sample, ensure_ascii=False)
             system_prompt = (
-                "Você é um assistente especializado em análise de dados. "
-                "Aqui está uma amostra do DataFrame que o usuário carregou:\n"
-                f"{data_str}\n"
-                "Use isso como contexto para responder."
+                "Você é um assistente especializado em análise de dados usando Python. "
+                "O usuário carregou um DataFrame, e aqui está uma amostra:\n"
+                f"{data_str}\n\n"
+                "Use este DataFrame como contexto para gerar código Python que faça análise"
+                "O código deve ser completo, comentado e pronto para rodar no Streamlit, "
+                "usando `st.write` para exibir resultados"
             )
-            print(system_prompt)
-        else:
-            system_prompt = "Você é um assistente que responde com códigos em python."
 
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(self.history)
