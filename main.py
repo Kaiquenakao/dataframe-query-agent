@@ -10,8 +10,14 @@ st.title("Visualizador de DataFrame")
 arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json"])
 
 if arquivo is not None:
+    try:
+        df = pd.read_csv(arquivo)
+    except Exception as e:
+        st.error(f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}")
+        df = None
+
     prompt = st.text_input("Digite o que deseja realizar com o dataframe")
-    resp = cc.ask(prompt=prompt, df=pd.read_csv(arquivo))
+    resp = cc.ask(prompt=prompt, df=df)
     match = re.search(r"```python(.*?)```", resp, re.DOTALL)
 
     if match:
