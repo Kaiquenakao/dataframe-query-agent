@@ -29,10 +29,14 @@ class ChatConversation:
                 "Você é um assistente especializado em análise de dados usando Python. "
                 "O usuário carregou um DataFrame, e aqui está uma amostra:\n"
                 f"{data_str}\n\n"
-                "Use este DataFrame como contexto para gerar código Python que faça análise"
-                "O código deve ser completo, comentado e pronto para rodar no Streamlit, "
-                "usando `st.write` para exibir resultados"
+                "Use este DataFrame como contexto para gerar código Python que faça análise. "
+                "O código deve ser completo, comentado e pronto para rodar no Streamlit. "
+                "Use `st.write` para exibir resultados normalmente. "
+                "Se o DataFrame estiver vazio ou houver algum problema ao exibir os dados, "
+                "gere código que mostre um alerta ao usuário usando `st.warning` "
+                "com uma mensagem clara indicando que o DataFrame está vazio ou inválido."
             )
+
 
         messages = [{"role": "system", "content": system_prompt}]
         messages.extend(self.history)
