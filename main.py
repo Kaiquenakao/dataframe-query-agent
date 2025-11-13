@@ -11,25 +11,6 @@ arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json
 
 if arquivo is not None:
     try:
-        df = pd.read_csv(arquivo)
-    except Exception as e:
-        st.error(f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}")
-        df = None
-
-    prompt = st.text_input("Digite o que deseja realizar com o dataframe")
-    resp = cc.ask(prompt=prompt, df=df)
-    match = re.search(r"```python(.*?)```", resp, re.DOTALL)
-
-    if match:
-        codigo = match.group(1).strip()
-        print("=== Código extraído ===")
-        exec(codigo)
-    else:
-        print("Nenhum código Python encontrado.")
-        print(match)
-
-
-    if st.button("Carregar DataFrame Original"):
         if arquivo.name.endswith(".csv"):
             df = pd.read_csv(arquivo)
         elif arquivo.name.endswith(".parquet"):
@@ -39,14 +20,32 @@ if arquivo is not None:
         else:
             st.error("Formato de arquivo não suportado.")
             df = None
+    except Exception as e:
+        st.error(f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}")
+        df = None
 
+    prompt = st.text_input("Digite o que deseja realizar com o dataframe")
+
+    if prompt and df is not None:
+        print(f"Executando o prompt: {prompt}")
+        resp = cc.ask(prompt=prompt, df=df)
+        match = re.search(r"```python(.*?)```", resp, re.DOTALL)
+
+        if match:
+            codigo = match.group(1).strip()
+            print("=== Código extraído ===")
+            exec(codigo)
+        else:
+            print("Nenhum código Python encontrado.")
+            print(match)
+
+    if st.button("Carregar DataFrame Original"):
         if df is not None:
             st.success("DataFrame carregado com sucesso!")
             st.write(df)
-
+        else:
+            st.warning("Nenhum DataFrame foi carregado corretamente.")
             
-
-
 with st.sidebar:
     st.header("Menu")
     openai_token = st.text_input("OpenAI API Token", type="password")
