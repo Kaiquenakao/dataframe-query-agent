@@ -39,12 +39,23 @@ if arquivo is not None:
             print("Nenhum código Python encontrado.")
             print(match)
 
-    if st.button("Carregar DataFrame Original"):
-        if df is not None:
-            st.success("DataFrame carregado com sucesso!")
-            st.write(df)
-        else:
-            st.warning("Nenhum DataFrame foi carregado corretamente.")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Carregar DataFrame Original"):
+            if df is not None:
+                st.success("DataFrame carregado com sucesso!")
+                st.write(df)
+            else:
+                st.warning("Nenhum DataFrame foi carregado corretamente.")
+
+    with col2:
+        if st.button("Limpar DataFrame Original"):
+            if df is not None:
+                st.session_state.df = None   # limpa corretamente
+                st.success("DataFrame limpo com sucesso!")
+            else:
+                st.warning("Nenhum DataFrame foi limpado corretamente.")
             
 with st.sidebar:
     st.header("Menu")
