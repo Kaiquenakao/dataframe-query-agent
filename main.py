@@ -70,6 +70,14 @@ with st.sidebar:
         help="Controla a aleatoriedade das respostas. 0 = mais determinístico, 1 = mais criativo."
     )
 
+    max_tokens = st.number_input(
+        "Máximo de tokens da resposta",
+        min_value=50,
+        max_value=2000,
+        value=300,
+        help="Limita o tamanho da resposta"
+    )
+
     if st.button("Salvar Token"):
         if openai_token:
             st.session_state["openai_token"] = openai_token
