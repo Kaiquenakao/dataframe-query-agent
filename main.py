@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 from src.agent_chat import ChatConversation
+from src.utils import get_logger
 import re
 
+logger = get_logger("visualizador_df")
 cc = ChatConversation()
 
 st.title("Visualizador de DataFrame")
@@ -22,22 +24,29 @@ if arquivo is not None:
             df = None
     except Exception as e:
         st.error(f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}")
+        logger.error(f"Erro ao ler o arquivo: {e}")
         df = None
 
     prompt = st.text_input("Digite o que deseja realizar com o dataframe")
 
     if prompt and df is not None:
-        print(f"Executando o prompt: {prompt}")
+        logger.info(f"Executando o prompt: {prompt}")
         resp = cc.ask(prompt=prompt, df=df)
         match = re.search(r"```python(.*?)```", resp, re.DOTALL)
 
         if match:
             codigo = match.group(1).strip()
-            print("=== Código extraído ===")
-            exec(codigo)
+            logger.info("=== Código extraído ===")
+            
+            try:
+                exec(codigo)
+                logger.info("Execução do código realizada com sucesso.")
+            except Exception as e:
+                logger.error(f"Erro ao executar o código: {e}")
+                st.error(f"Erro ao executar o código: {e}")
         else:
-            print("Nenhum código Python encontrado.")
-            print(match)
+            logger.warning("Nenhum código Python encontrado.")
+            logger.debug(f"Match result: {match}")
 
     col1, col2 = st.columns(2)
 
@@ -52,8 +61,9 @@ if arquivo is not None:
     with col2:
         if st.button("Limpar DataFrame Original"):
             if df is not None:
-                st.session_state.df = None   # limpa corretamente
+                st.session_state.df = None
                 st.success("DataFrame limpo com sucesso!")
+                logger.info("DataFrame limpo com sucesso.")
             else:
                 st.warning("Nenhum DataFrame foi limpado corretamente.")
             
@@ -65,7 +75,7 @@ with st.sidebar:
         "Temperatura do LLM",
         min_value=0.0,
         max_value=1.0,
-        value=0.7,  # valor padrão
+        value=0.7,
         step=0.1,
         help="Controla a aleatoriedade das respostas. 0 = mais determinístico, 1 = mais criativo."
     )
@@ -82,5 +92,7 @@ with st.sidebar:
         if openai_token:
             st.session_state["openai_token"] = openai_token
             st.success("Token salvo!")
+            logger.info("Token OpenAI salvo no session_state.")
         else:
             st.warning("Digite o token antes de salvar.")
+            logger.warning("Tentativa de salvar token vazio.")
