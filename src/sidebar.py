@@ -3,19 +3,25 @@ from src.utils import get_logger
 
 logger = get_logger("sidebar")
 
+
 def render_sidebar():
+    """
+    Renderiza a sidebar do Streamlit para configuração do OpenAI API Token,
+    temperatura e máximo de tokens.
+    Retorna uma tupla com (openai_token, temperature, max_tokens).
+    """
     with st.sidebar:
         st.header("Menu")
 
         openai_token = st.text_input("OpenAI API Token", type="password")
-        
+
         temperature = st.slider(
             "Temperatura do LLM",
             min_value=0.0,
             max_value=1.0,
             value=0.7,
             step=0.1,
-            help="Controla a aleatoriedade das respostas."
+            help="Controla a aleatoriedade das respostas.",
         )
 
         max_tokens = st.number_input(
@@ -23,7 +29,7 @@ def render_sidebar():
             min_value=50,
             max_value=2000,
             value=1000,
-            help="Limita o tamanho da resposta"
+            help="Limita o tamanho da resposta",
         )
 
         if st.button("Salvar Token"):

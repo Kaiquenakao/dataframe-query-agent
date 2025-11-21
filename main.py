@@ -12,7 +12,7 @@ st.title("Visualizador de DataFrame")
 # --- SIDEBAR ---
 openai_token, temperature, max_tokens = render_sidebar()
 
-# Verifica se o token foi salvo no session_state
+# --- VERIFICAÇÃO DO TOKEN ---
 token_ok = "openai_token" in st.session_state and st.session_state["openai_token"]
 
 arquivo = st.file_uploader("Selecione um arquivo", type=["csv", "parquet", "json"])
@@ -31,7 +31,9 @@ if arquivo is not None:
             st.error("Formato de arquivo não suportado.")
             df = None
     except Exception as e:
-        st.error(f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}")
+        st.error(
+            f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}"
+        )
         logger.error(f"Erro ao ler o arquivo: {e}")
         df = None
 
@@ -45,14 +47,18 @@ if not token_ok or df is None:
         "3. Selecionar um **arquivo** para carregar\n\n"
         "Após isso, o campo de **texto** será liberado!"
     )
-    prompt = st.text_input("Digite o que deseja realizar com o dataframe", disabled=True)
+    prompt = st.text_input(
+        "Digite o que deseja realizar com o dataframe", disabled=True
+    )
 else:
     prompt = st.text_input("Digite o que deseja realizar com o dataframe")
 
 # --- PROCESSAMENTO DO PROMPT ---
 if prompt and df is not None and token_ok:
     logger.info(f"Executando o prompt: {prompt}")
-    cc = ChatConversation(api_key=openai_token, temperature=temperature, max_tokens=max_tokens)
+    cc = ChatConversation(
+        api_key=openai_token, temperature=temperature, max_tokens=max_tokens
+    )
     try:
         resp = cc.ask(prompt=prompt, df=df)
         match = re.search(r"```python(.*?)```", resp, re.DOTALL)
@@ -61,7 +67,7 @@ if prompt and df is not None and token_ok:
         logger.error(f"Erro ao processar o prompt: {e}")
         resp = None
         match = None
-    
+
     if match:
         codigo = match.group(1).strip()
         logger.info("=== Código extraído ===")
@@ -76,8 +82,7 @@ if prompt and df is not None and token_ok:
         logger.warning("Nenhum código Python encontrado.")
         logger.debug(f"Match result: {match}")
 
-
-# --- COLUNAS PARA BOTÕES ---
+# --- BOTÕES DE AÇÃO PARA CARREGAR/LIMPAR DATAFRAME ---
 col1, col2 = st.columns(2)
 
 with col1:

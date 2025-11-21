@@ -2,20 +2,50 @@ from openai import OpenAI
 import pandas as pd
 import io
 
+
 class ChatConversation:
-    def __init__(self, api_key, temperature: float = 0.1, model: str = "gpt-4o-mini", max_tokens: int = 500):
+    def __init__(
+        self,
+        api_key,
+        temperature: float = 0.1,
+        model: str = "gpt-4o-mini",
+        max_tokens: int = 500,
+    ):
         """
         Inicializa a classe de conversação com o modelo da OpenAI.
+
+        api_key: Chave da API da OpenAI.
+        temperature: Temperatura para geração de texto.
+        model: Modelo da OpenAI a ser utilizado.
+        max_tokens: Número máximo de tokens na resposta.
+
+        example:
+            cc = ChatConversation(
+                api_key="sua_chave_aqui",
+                temperature=0.2,
+                model="gpt-4o-mini",
+                max_tokens=500
+            )
         """
         self.client = OpenAI(api_key=api_key)
         self.temperature = temperature
         self.model = model
         self.max_tokens = max_tokens
-        self.history = [] 
+        self.history = []
 
     def ask(self, prompt: str, df: pd.DataFrame | None = None) -> str:
         """
         Envia um prompt para o modelo, opcionalmente com o DataFrame.
+
+        prompt: Texto do prompt a ser enviado.
+        df: DataFrame pandas carregado (opcional).
+        Retorna a resposta do modelo como string.
+
+        example:
+            resposta = cc.ask(
+                prompt="Me mostre as primeiras 5 linhas do DataFrame.",
+                df=meu_dataframe
+            )
         """
         if df is not None:
             buffer = io.StringIO()
@@ -50,7 +80,7 @@ class ChatConversation:
                 model=self.model,
                 messages=messages,
                 temperature=self.temperature,
-                max_tokens=self.max_tokens
+                max_tokens=self.max_tokens,
             )
         except Exception as e:
             raise e
