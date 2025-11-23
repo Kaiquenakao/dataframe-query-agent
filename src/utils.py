@@ -1,3 +1,7 @@
+"""
+Função utilitária para configuração de logging.
+"""
+
 import logging
 import sys
 

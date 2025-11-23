@@ -1,9 +1,22 @@
+"""
+Módulo para conversação com um modelo da OpenAI, permitindo interações
+"""
+
+import io
 from openai import OpenAI
 import pandas as pd
-import io
 
 
 class ChatConversation:
+    """
+    Gerencia uma conversa com modelos da OpenAI, mantendo histórico e permitindo
+    enviar prompts e receber respostas.
+
+    Methods:
+        ask(prompt: str, df: pd.DataFrame | None = None) -> str:
+            Envia um prompt para o modelo, opcionalmente com o DataFrame.
+    """
+
     def __init__(
         self,
         api_key,
@@ -12,20 +25,13 @@ class ChatConversation:
         max_tokens: int = 500,
     ):
         """
-        Inicializa a classe de conversação com o modelo da OpenAI.
+        Inicializa uma instância de ChatConversation.
 
-        api_key: Chave da API da OpenAI.
-        temperature: Temperatura para geração de texto.
-        model: Modelo da OpenAI a ser utilizado.
-        max_tokens: Número máximo de tokens na resposta.
-
-        example:
-            cc = ChatConversation(
-                api_key="sua_chave_aqui",
-                temperature=0.2,
-                model="gpt-4o-mini",
-                max_tokens=500
-            )
+        Args:
+            api_key (str): Chave da API da OpenAI.
+            temperature (float): Temperatura para geração das respostas.
+            model (str): Nome do modelo a ser utilizado.
+            max_tokens (int): Número máximo de tokens por resposta.
         """
         self.client = OpenAI(api_key=api_key)
         self.temperature = temperature
@@ -62,18 +68,19 @@ class ChatConversation:
                 "- Nunca crie o df dentro do código; ele já existe.\n\n"
                 "REGRAS PARA EXIBIÇÃO:\n"
                 "- Sempre que o usuário solicitar múltiplas colunas (existentes ou criadas), "
-                "elas devem ser exibidas juntas, lado a lado, em um único dataframe, usando um único st.write().\n"
+                "elas devem ser exibidas juntas, lado a lado, em um único dataframe, "
+                "usando um único st.write().\n"
                 "- Não dividir a resposta em múltiplos st.write() separados para colunas relacionadas.\n\n"
                 "Sua tarefa é gerar código Python completo, comentado e pronto para rodar no Streamlit.\n"
                 "- Use o objeto `df` diretamente para análises e visualizações.\n"
                 "- Use `st.write()` para exibir resultados normalmente.\n"
-                "- Se o DataFrame estiver vazio, inválido ou não utilizável, exiba um aviso usando `st.warning()` "
-                "informando claramente o problema.\n"
+                "- Se o DataFrame estiver vazio, inválido ou não utilizável, exiba um aviso usando "
+                "`st.warning()` informando claramente o problema.\n"
             )
 
-        messages = [{"role": "system", "content": system_prompt}]
-        messages.extend(self.history)
-        messages.append({"role": "user", "content": prompt})
+            messages = [{"role": "system", "content": system_prompt}]
+            messages.extend(self.history)
+            messages.append({"role": "user", "content": prompt})
 
         try:
             response = self.client.chat.completions.create(

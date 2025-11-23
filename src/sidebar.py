@@ -1,3 +1,8 @@
+"""
+Fornece a interface da sidebar do Streamlit para configuração do token da OpenAI API,
+temperatura e máximo de tokens.
+"""
+
 import streamlit as st
 from src.utils import get_logger
 
