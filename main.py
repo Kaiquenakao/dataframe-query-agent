@@ -1,9 +1,18 @@
+"""
+Visualizador de DataFrame com Streamlit e OpenAI API.
+Permite ao usuário carregar um arquivo de dados (CSV, Parquet, JSON),
+fazer perguntas sobre o DataFrame e obter respostas geradas pela API da OpenAI.
+"""
+
+import re
+
+
 import streamlit as st
 import pandas as pd
+
 from src.agent_chat import ChatConversation
 from src.utils import get_logger
 from src.sidebar import render_sidebar
-import re
 
 logger = get_logger("visualizador_df")
 
@@ -29,12 +38,13 @@ if arquivo is not None:
             df = pd.read_json(arquivo)
         else:
             st.error("Formato de arquivo não suportado.")
+            logger.error("Arquivo inválido: %s", arquivo.name)
             df = None
     except Exception as e:
         st.error(
-            f"Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: {e}"
+            "Erro ao ler o arquivo. Verifique se é um arquivo válido. Detalhes: %s", e
         )
-        logger.error(f"Erro ao ler o arquivo: {e}")
+        logger.error("Erro ao ler o arquivo: %s", e)
         df = None
 
 # --- INPUT DO COMANDO DEPENDENTE DO TOKEN ---
@@ -55,7 +65,7 @@ else:
 
 # --- PROCESSAMENTO DO PROMPT ---
 if prompt and df is not None and token_ok:
-    logger.info(f"Executando o prompt: {prompt}")
+    logger.info("Executando o prompt: %s", prompt)
     cc = ChatConversation(
         api_key=openai_token, temperature=temperature, max_tokens=max_tokens
     )
@@ -63,8 +73,8 @@ if prompt and df is not None and token_ok:
         resp = cc.ask(prompt=prompt, df=df)
         match = re.search(r"```python(.*?)```", resp, re.DOTALL)
     except Exception as e:
-        st.error(f"Erro ao processar o prompt: {e}")
-        logger.error(f"Erro ao processar o prompt: {e}")
+        st.error("Erro ao processar o prompt: %s", e)
+        logger.error("Erro ao processar o prompt: %s", e)
         resp = None
         match = None
 
@@ -76,8 +86,8 @@ if prompt and df is not None and token_ok:
             exec(codigo)
             logger.info("Execução do código realizada com sucesso.")
         except Exception as e:
-            logger.error(f"Erro ao executar o código: {e}")
-            st.error(f"Erro ao executar o código: {e}")
+            logger.error("Erro ao executar o código: %s", e)
+            st.error("Erro ao executar o código: %s", e)
     else:
         logger.warning("Nenhum código Python encontrado.")
         logger.debug(f"Match result: {match}")
